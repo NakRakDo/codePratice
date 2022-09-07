@@ -1,7 +1,9 @@
+package BackJoon;
+
 import java.util.Scanner;
 
 public class Bj_4375 {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while(scanner.hasNextInt()){
             int num = scanner.nextInt(); //~~BufferedReader를 사용하려 했으나..~~
