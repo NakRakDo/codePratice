@@ -1,2 +1,5 @@
-package codility.lesson1;public class array2 {
+package codility.lesson1;
+
+public class array2 {
+
 }
