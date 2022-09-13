@@ -1,4 +1,4 @@
-package codility.lesson1;
+package codility.lesson2;
 
 public class array1 {
     public static void main(String[] args) {
