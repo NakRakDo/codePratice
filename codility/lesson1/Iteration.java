@@ -2,6 +2,7 @@ package codility.lesson1;
 import java.math.BigInteger;
 
 public class Iteration {
+    //BinaryGap
     public static void main(String[] args) {
 
         System.out.println("Binary Num : " + getBinaryNum(561892));
