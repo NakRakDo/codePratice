@@ -2,6 +2,7 @@ package BackJoon;
 
 import java.util.Scanner;
 
+//2와 5로 나누어떨어지지 않는 수중에 1로만 이루어진 수를 찾아라
 public class Bj_4375 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
