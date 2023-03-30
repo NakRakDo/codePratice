@@ -15,8 +15,12 @@ public class Walk_In_the_Park {
     public static void main(String[] args) {
         int[] result;
 
-        String[] park = {"OOO","OOO","OSO","OXO"}; //{"OSO","OOO","OXO","OOO"} {"SOO","OOO","OOO"} {"OOO","OOO","OSO","OXO"}
-        String[] routes = {"E 2","S 2","W 1"};
+        //{"SOO","OOO","OOO"}	{"E 2","S 2","W 1"}	{2,1}
+        //{"SOO","OXX","OOO"}	{"E 2","S 2","W 1"}	{0,1}
+        //{"OSO","OOO","OXO","OOO"}	{"E 2","S 3","W 1"}	{0,0}
+
+        String[] park = {"OSO","OOO","OXO","OOO"}; //{"OSO","OOO","OXO","OOO"} {"SOO","OOO","OOO"} {"OOO","OOO","OSO","OXO"}
+        String[] routes = {"E 2","S 3","W 1"};
 
         result = solution(park, routes);
 
@@ -31,15 +35,18 @@ public class Walk_In_the_Park {
 
         for(int i = 0; i < routes.length; i++){
             String command = routes[i];
-            direction = command.substring(0,0);
-            moveCnt = command.substring(3,3);
+            direction = command.substring(0,1);
+            moveCnt = command.substring(2,3);
 
-            //TODO 이동가능에 따른 코드 작성
-            isMovable(curPos, park, direction, moveCnt);
+
+            int[] destPos = getDestinationPosition(curPos, direction, moveCnt);
+
+            if(!isMovable(curPos, destPos, park, direction)) continue;
+
+            curPos = destPos;
         }
 
-
-        return null;
+        return curPos;
     }
 
     private static int[] getStartingPoint(String[] park){
@@ -58,9 +65,28 @@ public class Walk_In_the_Park {
         return startPoint;
     }
 
-    private static boolean isMovable(int[] curPos, String[] park, String direction, String moveCnt){
-        boolean isMovable = true;
-        int[] expPos = curPos;
+    private static int[] getDestinationPosition(int[] curPos, String direction, String moveCnt){
+        int[] expPos = {curPos[0], curPos[1]};
+
+        if(direction.equals(EAST) || direction.equals(WEST)) {
+            if(direction.equals(EAST)){
+                expPos[1] = expPos[1] + Integer.parseInt(moveCnt);
+            }else { // WEST
+                expPos[1] = expPos[1] - Integer.parseInt(moveCnt);
+            }
+
+        } else if (direction.equals(SOUTH) || direction.equals(NORTH)) {
+            if(direction.equals(SOUTH)){
+                expPos[0] = expPos[0] + Integer.parseInt(moveCnt);
+            }else { //NORTH
+                expPos[0] = expPos[0] - Integer.parseInt(moveCnt);
+            }
+        }
+
+        return expPos;
+    }
+    private static boolean isMovable(int[] curPos, int[] expPos, String[] park, String direction){
+/*        int[] expPos = curPos;
 
         if(direction.equals(EAST) || direction.equals(WEST)) {
             if(direction.equals(EAST)){
@@ -75,28 +101,33 @@ public class Walk_In_the_Park {
             }else { //NORTH
                 expPos[0] = curPos[0] - Integer.parseInt(moveCnt);
             }
-        }
-
+        }*/
         //이동 후 범위 체크
-        if(expPos[0] < 0 || expPos[1] < 0) isMovable = false;
+        if((expPos[0] < 0 || expPos[1] < 0)
+                || (park[curPos[0]].length() <= expPos[1] || park.length <= expPos[0])) {
+            return false;
+            //isMovable = false;
+        }
         //이동 시 장애물 체크
         if(direction.equals(EAST) || direction.equals(WEST)) {
-            for(int i = expPos[1] + 1; i < park[expPos[0]].length(); i++){
-                if(String.valueOf(park[expPos[0]].charAt(i)).equals(OBSTRUTION)) {
-                    isMovable = false;
-                    break;
+            for(int i = curPos[1] + 1; i < park[curPos[0]].length(); i++){
+                if(String.valueOf(park[curPos[0]].charAt(i)).equals(OBSTRUTION)) {
+                    return false;
+                    //isMovable = false;
+                    //break;
                 }
             }
 
         } else if (direction.equals(SOUTH) || direction.equals(NORTH)) {
-            for(int i = expPos[0] + 1; i < park.length; i++){
-                if(String.valueOf(park[i].charAt(expPos[1])).equals(OBSTRUTION)) {
-                    isMovable = false;
-                    break;
+            for(int i = curPos[0] + 1; i < park.length; i++){
+                if(String.valueOf(park[i].charAt(curPos[1])).equals(OBSTRUTION)) {
+                    return false;
+                    //isMovable = false;
+                    //break;
                 }
             }
         }
-        return isMovable;
+        return true;
     }
 
     private static boolean Move(String direction, String moveCnt){
