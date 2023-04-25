@@ -19,36 +19,52 @@ public class Walk_In_the_Park {
         //{"SOO","OXX","OOO"}	{"E 2","S 2","W 1"}	{0,1}
         //{"OSO","OOO","OXO","OOO"}	{"E 2","S 3","W 1"}	{0,0}
 
-        String[] park = {"OSO","OOO","OXO","OOO"}; //{"OSO","OOO","OXO","OOO"} {"SOO","OOO","OOO"} {"OOO","OOO","OSO","OXO"}
-        String[] routes = {"E 2","S 3","W 1"};
+        //String[] park = {"OSO","OOO","OXO","OOO"}; //{"OSO","OOO","OXO","OOO"} {"SOO","OOO","OOO"} {"OOO","OOO","OSO","OXO"}
+        //String[] routes = {"E 2","S 3","W 1"};
 
+        String[] park = {"OSOOXOOOO","OOOOOOOOO","OOOOOOOOO","OOOOOOOOO","OOOOOOOOO","OXOOOOOOO","OOOOOOOOO","OOOOOOXOO","OOOOOOOOO"};
+        String[] routes = {"W 3","S 3","W 1","N 2","W 2","S 3","E 5","S 3","W 1"};
         result = solution(park, routes);
-
     }
 
     private static int[] solution(String[] park, String[] routes){
+        if(!checkCondition(park, routes)) return null;
+
         int[] curPos = new int[2]; //현재 위치
         String direction; //이동할 방향
         String moveCnt = null; //이동할 칸의수
 
-        curPos = getStartingPoint(park);
+        curPos = getStartingPoint(park); //첫 시작위치 구하기
 
         for(int i = 0; i < routes.length; i++){
+            // 명령 행 추출하여 구분하기
             String command = routes[i];
-            direction = command.substring(0,1);
-            moveCnt = command.substring(2,3);
+            direction = command.substring(0,1); //방향
+            moveCnt = command.substring(2,3);  // 움직이는 칸수
 
+            int[] destPos = getDestinationPosition(curPos, direction, moveCnt); // 움직였을 때 도착지점 구하기
 
-            int[] destPos = getDestinationPosition(curPos, direction, moveCnt);
+            if(!isMovable(curPos, destPos, park, direction, moveCnt)) continue; // 그도착 지점으로 이동할 수 있는지 여부 체크
 
-            if(!isMovable(curPos, destPos, park, direction)) continue;
-
-            curPos = destPos;
+            curPos = destPos; // 이동할 수 있다면 현재위치를 도착위치로 변경 TODO move 함수에 이식
+            //Move(curPos,destPos);
         }
 
-        return curPos;
+        return curPos; //현재 위치 반환
     }
 
+    private static boolean checkCondition(String[] park, String[] routes) {
+        if(park.length < 3 || park.length > 50) return false;
+        for(int i = 0; i < park.length; i++){
+            if(park[1].length() < 3 || park[i].length() > 50 ) return false;
+        }
+
+        if(routes.length < 1 || routes.length > 50) return false;
+
+        return true;
+    }
+
+    //현재 위치 구하기
     private static int[] getStartingPoint(String[] park){
         int[] startPoint = new int[2]; //시작지점
 
@@ -66,16 +82,19 @@ public class Walk_In_the_Park {
     }
 
     private static int[] getDestinationPosition(int[] curPos, String direction, String moveCnt){
-        int[] expPos = {curPos[0], curPos[1]};
+        int[] expPos = {curPos[0], curPos[1]}; // 도착 예정지점 설정을 위한 현재위치 덮어 씌우기(원시 타입이라 원소를 추출하여 할당)
 
+        // 동 or 서 방향이라면
         if(direction.equals(EAST) || direction.equals(WEST)) {
+            //park 이중 배열의 열을 계산
             if(direction.equals(EAST)){
                 expPos[1] = expPos[1] + Integer.parseInt(moveCnt);
             }else { // WEST
                 expPos[1] = expPos[1] - Integer.parseInt(moveCnt);
             }
-
+        //남 or 북 방향이면
         } else if (direction.equals(SOUTH) || direction.equals(NORTH)) {
+            //park 이중배열의 행을 계산
             if(direction.equals(SOUTH)){
                 expPos[0] = expPos[0] + Integer.parseInt(moveCnt);
             }else { //NORTH
@@ -83,9 +102,10 @@ public class Walk_In_the_Park {
             }
         }
 
+        // 예상 도착 지점 반환
         return expPos;
     }
-    private static boolean isMovable(int[] curPos, int[] expPos, String[] park, String direction){
+    private static boolean isMovable(int[] curPos, int[] expPos, String[] park, String direction, String moveCnt){
 /*        int[] expPos = curPos;
 
         if(direction.equals(EAST) || direction.equals(WEST)) {
@@ -102,40 +122,35 @@ public class Walk_In_the_Park {
                 expPos[0] = curPos[0] - Integer.parseInt(moveCnt);
             }
         }*/
-        //이동 후 범위 체크
-        if((expPos[0] < 0 || expPos[1] < 0)
-                || (park[curPos[0]].length() <= expPos[1] || park.length <= expPos[0])) {
+            //이동 후 범위 체크
+        if((expPos[0] < 0 || expPos[1] < 0)// 범위가 음수로 빠지거나
+                || (park[curPos[0]].length() <= expPos[1] || park.length <= expPos[0])) { //범위를 벗어난다면
             return false;
             //isMovable = false;
         }
-        //이동 시 장애물 체크
+        //이동 시 장애물 체크 TODO 동쪽 양수 루프 서쪽 음수 루프 하면서 체크 (남 북도 마찬가지)
         if(direction.equals(EAST) || direction.equals(WEST)) {
-            for(int i = curPos[1] + 1; i < park[curPos[0]].length(); i++){
+//            for(int i = curPos[1] + 1; i < park[curPos[0]].length(); i++){
+            for(int i = curPos[1] + 1; i < Integer.parseInt(moveCnt) + curPos[1] + 1; i++){ //i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
                 if(String.valueOf(park[curPos[0]].charAt(i)).equals(OBSTRUTION)) {
                     return false;
-                    //isMovable = false;
-                    //break;
                 }
             }
 
         } else if (direction.equals(SOUTH) || direction.equals(NORTH)) {
-            for(int i = curPos[0] + 1; i < park.length; i++){
+//            for(int i = curPos[0] + 1; i < park.length; i++){
+            for(int i = curPos[0] + 1; i < Integer.parseInt(moveCnt) + curPos[0] + 1; i++){//i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
                 if(String.valueOf(park[i].charAt(curPos[1])).equals(OBSTRUTION)) {
                     return false;
-                    //isMovable = false;
-                    //break;
                 }
             }
         }
         return true;
     }
 
-    private static boolean Move(String direction, String moveCnt){
-
-
-        return false;
+    private static void Move(int [] curPos, int [] destPos){
+        curPos = destPos;
     }
-
 }
 
 
