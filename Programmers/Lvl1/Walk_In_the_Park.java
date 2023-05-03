@@ -129,17 +129,29 @@ public class Walk_In_the_Park {
             //isMovable = false;
         }
         //이동 시 장애물 체크 TODO 동쪽 양수 루프 서쪽 음수 루프 하면서 체크 (남 북도 마찬가지)
-        if(direction.equals(EAST) || direction.equals(WEST)) {
+        if(direction.equals(EAST)) {
 //            for(int i = curPos[1] + 1; i < park[curPos[0]].length(); i++){
-            for(int i = curPos[1] + 1; i < Integer.parseInt(moveCnt) + curPos[1] + 1; i++){ //i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
-                if(String.valueOf(park[curPos[0]].charAt(i)).equals(OBSTRUTION)) {
+            for (int i = curPos[1] + 1; i < Integer.parseInt(moveCnt) + (curPos[1] + 1); i++) { //i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
+                if (String.valueOf(park[curPos[0]].charAt(i)).equals(OBSTRUTION)) {
+                    return false;
+                }
+            }
+        } else if(direction.equals(WEST)){
+            for (int i = curPos[1] - 1; i > (curPos[1] - 1) - Integer.parseInt(moveCnt); i--) { //i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
+                if (String.valueOf(park[curPos[0]].charAt(i)).equals(OBSTRUTION)) {
                     return false;
                 }
             }
 
-        } else if (direction.equals(SOUTH) || direction.equals(NORTH)) {
+        } else if (direction.equals(SOUTH)) {
 //            for(int i = curPos[0] + 1; i < park.length; i++){
-            for(int i = curPos[0] + 1; i < Integer.parseInt(moveCnt) + curPos[0] + 1; i++){//i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
+            for(int i = curPos[0] + 1; i < Integer.parseInt(moveCnt) + (curPos[0] + 1); i++){//i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
+                if(String.valueOf(park[i].charAt(curPos[1])).equals(OBSTRUTION)) {
+                    return false;
+                }
+            }
+        } else if(direction.equals(NORTH)) {
+            for(int i = curPos[0] - 1; i > (curPos[0] - 1) - Integer.parseInt(moveCnt); i--){//i 는 현재위치 다음위치. 최대 loop 횟수는 도착지점 의 인덱스
                 if(String.valueOf(park[i].charAt(curPos[1])).equals(OBSTRUTION)) {
                     return false;
                 }
