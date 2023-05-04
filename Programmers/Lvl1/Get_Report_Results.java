@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-//Level 1  공원 산책
+//신고받기
 public class Get_Report_Results {
 
 
